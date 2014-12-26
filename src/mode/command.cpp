@@ -25,6 +25,10 @@
 #include <algorithm>
 #include <sstream>
 
+#include <iostream>
+#include <fstream>
+using namespace std;
+
 #ifdef HAVE_TAGLIB_H
 #include <taglib/tag.h>
 #include <taglib/taglib.h>
@@ -885,11 +889,7 @@ void Command::SavePlaylist(std::string const & arguments)
 {
    if (arguments != "")
    {
-      try
-      {
-         client_.RemovePlaylist(arguments);
-      }
-      catch (...) {}
+      client_.RemovePlaylist(arguments);
       client_.SavePlaylist(arguments);
    }
    else

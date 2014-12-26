@@ -39,6 +39,10 @@
 #include <signal.h>
 #include <sys/types.h>
 
+#include <iostream>
+#include <fstream>
+using namespace std;
+
 using namespace Mpc;
 
 #define MPDCOMMAND
@@ -1074,6 +1078,38 @@ void Client::AddToNamedPlaylist(std::string const & name, Mpc::Song * song)
          ErrorString(ErrorNumber::ClientNoConnection);
       }
    });
+}
+
+
+bool Client::PlaylistExists(std::string const & name)
+{
+   Debug("Client::Check if playlist %s exists", name.c_str());
+
+   if (Connected() == true)
+   {
+      Debug("Client::Request all playlists");
+
+      if (mpd_send_list_playlists(connection_))
+      {
+         cout << "here" << endl;
+         mpd_playlist * nextPlaylist = mpd_recv_playlist(connection_);
+
+         for(; nextPlaylist != NULL; nextPlaylist = mpd_recv_playlist(connection_))
+         {
+            std::string const playlist_path = mpd_playlist_get_path(nextPlaylist);
+            mpd_playlist_free(nextPlaylist);
+
+            cout << name << "   " << playlist_path << endl;
+            if (name == playlist_path)
+            {
+               return true;
+            }
+         }
+      }
+
+      mpd_connection_clear_error(connection_);
+   }
+   return false;
 }
 
 
